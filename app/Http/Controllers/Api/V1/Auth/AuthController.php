@@ -219,4 +219,219 @@ class AuthController extends Controller
             $token->getKey() . '|' . $plainTextToken
         );
     }
+
+    /**
+     * Register member - Step 1.
+     *
+     * Creates the member account with the initial
+     * registration information and returns an API token.
+     */
+    public function register(Request $request): JsonResponse
+    {
+        /*
+    |--------------------------------------------------------------------------
+    | Validate Step 1
+    |--------------------------------------------------------------------------
+    */
+
+        $validated = $request->validate([
+
+            'profile_created_for' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'full_name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:members,email',
+            ],
+
+            'mobile_number' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:members,mobile_number',
+            ],
+
+            'gender' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+
+            'birth_date_time' => [
+                'required',
+                'date',
+            ],
+
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8),
+            ],
+        ]);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Get resolved application
+    |--------------------------------------------------------------------------
+    |
+    | Your application middleware determines which member database
+    | should be used.
+    |
+    */
+
+        $application = $request->attributes->get('application');
+
+        if (!$application) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Application context is missing.',
+            ], 500);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Create Member
+    |--------------------------------------------------------------------------
+    */
+
+        $member = new Member();
+
+        $member->profile_created_for = $validated['profile_created_for'];
+        $member->full_name = $validated['full_name'];
+        $member->email = $validated['email'];
+        $member->mobile_number = $validated['mobile_number'];
+        $member->gender = $validated['gender'];
+        $member->birth_date_time = $validated['birth_date_time'];
+
+        /*
+    |--------------------------------------------------------------------------
+    | Password
+    |--------------------------------------------------------------------------
+    |
+    | New registrations should use a secure password hash.
+    |
+    */
+
+        $member->password = Hash::make(
+            $validated['password']
+        );
+
+        /*
+    |--------------------------------------------------------------------------
+    | Initial Profile Completion
+    |--------------------------------------------------------------------------
+    |
+    | Step 1 has only been completed.
+    | The profile completion percentage can be recalculated
+    | after subsequent profile steps.
+    |
+    */
+
+        $member->profile_completed = 0;
+
+        $member->save();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Create Sanctum Token
+    |--------------------------------------------------------------------------
+    |
+    | This follows the same custom token structure currently
+    | used by your login() method.
+    |
+    */
+
+        $plainTextToken = Str::random(40);
+
+        $hashedToken = hash(
+            'sha256',
+            $plainTextToken
+        );
+
+        $personalAccessToken = new PersonalAccessToken();
+
+        /*
+     * Tokens are stored in the central database.
+     */
+        $personalAccessToken->setConnection('mariadb');
+
+        $personalAccessToken->name = 'mobile-app';
+        $personalAccessToken->token = $hashedToken;
+        $personalAccessToken->abilities = ['*'];
+        $personalAccessToken->tokenable_id = $member->id;
+        $personalAccessToken->tokenable_type = $member->getMorphClass();
+        $personalAccessToken->application_id = $application->id;
+
+        $personalAccessToken->save();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Response
+    |--------------------------------------------------------------------------
+    */
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Registration step 1 completed successfully.',
+
+            'data' => [
+
+                'token' => $plainTextToken,
+
+                'token_type' => 'Bearer',
+
+                'application' => [
+                    'id' => $application->id,
+                    'name' => $application->name,
+                    'code' => $application->code,
+                ],
+
+                'member' => [
+
+                    'id' => $member->id,
+
+                    'profile_id' => $member->profile_id,
+
+                    'profile_created_for' =>
+                    $member->profile_created_for,
+
+                    'full_name' =>
+                    $member->full_name,
+
+                    'email' =>
+                    $member->email,
+
+                    'mobile_number' =>
+                    $member->mobile_number,
+
+                    'gender' =>
+                    $member->gender,
+
+                    'birth_date_time' =>
+                    $member->birth_date_time,
+
+                    'profile_completed' =>
+                    $member->profile_completed,
+
+                    'registration_step' => 1,
+
+                    'next_step' => 2,
+                ],
+            ],
+        ], 201);
+    }
 }
