@@ -43,7 +43,7 @@ class Member extends Authenticatable
     protected $fillable = [
 
         // -------------------------------------------------
-        // Basic
+        // Identity / Basic
         // -------------------------------------------------
         'profile_id',
         'profile_created_for',
@@ -52,11 +52,13 @@ class Member extends Authenticatable
         'mobile_number',
         'alternate_number',
         'whatsapp_number',
+        'password',
 
         // -------------------------------------------------
-        // Profile completion
+        // Registration
         // -------------------------------------------------
-        'profile_completed',
+        'registration_date',
+        'register_through',
 
         // -------------------------------------------------
         // Personal
@@ -156,12 +158,46 @@ class Member extends Authenticatable
         'is_partner_drinking',
         'about_my_partner',
         'horoscope_needed',
-        // Location
-        'country_living_in',
-        'state_living_in',
-        'city_living_in',
-        'address_living_in',
-        'native_place',
+
+        // -------------------------------------------------
+        // Membership / Plan
+        // -------------------------------------------------
+        'plan_id',
+        'plan_activation_date',
+
+        // -------------------------------------------------
+        // Profile Completion
+        // -------------------------------------------------
+        'profile_completed',
+
+        // -------------------------------------------------
+        // Profile / Photo
+        // -------------------------------------------------
+        'google_token',
+        'referral_code',
+        'id_proof',
+        'photo',
+        'photo_password',
+        'photo_approved',
+
+        // -------------------------------------------------
+        // Account Status
+        // -------------------------------------------------
+        'active',
+        'member_type',
+        'is_trusted',
+        'promoted',
+
+        // -------------------------------------------------
+        // Administration
+        // -------------------------------------------------
+        'remarks',
+        'relationship_manager',
+        'profile_hide',
+        'hide_for_days',
+        'hidden_date',
+        'assigned_to',
+        'pre_active',
     ];
 
     /**
@@ -214,12 +250,15 @@ class Member extends Authenticatable
             'no_of_child',
 
             // -------------------------------------------------
-            // Education & Career
+            // Education
             // -------------------------------------------------
             'about_my_education',
             'education',
             'any_other_qualifications',
 
+            // -------------------------------------------------
+            // Career
+            // -------------------------------------------------
             'about_my_career',
             'employed_in',
             'occupation',
@@ -286,13 +325,6 @@ class Member extends Authenticatable
             'is_partner_drinking',
             'about_my_partner',
             'horoscope_needed',
-
-            // Location
-            'country_living_in',
-            'state_living_in',
-            'city_living_in',
-            'address_living_in',
-            'native_place',
         ];
 
         $totalFields = count($completionFields);
@@ -304,16 +336,8 @@ class Member extends Authenticatable
         $completedFields = 0;
 
         foreach ($completionFields as $field) {
-
             $value = $this->{$field};
 
-            /*
-             * A field is considered complete when:
-             *
-             * - it is not NULL
-             * - it is not an empty string
-             * - it is not only whitespace
-             */
             if (
                 $value !== null &&
                 trim((string) $value) !== ''

@@ -6,9 +6,118 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Profile\UpdateBasicProfileRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Member;
 
 class ProfileController extends Controller
 {
+
+    /**
+     * standard member profile response.
+     */
+    private function memberData(Member $member): array
+    {
+        return [
+            'id' => $member->id,
+            'profile_id' => $member->profile_id,
+
+            // Profile completion
+            'profile_completed' => (int) $member->profile_completed,
+
+            // Photo
+            'photo' => $member->photo,
+
+            // Basic
+            'profile_created_for' => $member->profile_created_for,
+            'full_name' => $member->full_name,
+            'email' => $member->email,
+            'mobile_number' => $member->mobile_number,
+            'alternate_number' => $member->alternate_number,
+            'whatsapp_number' => $member->whatsapp_number,
+
+            // Personal
+            'birth_date_time' => $member->birth_date_time,
+            'birth_place' => $member->birth_place,
+            'gender' => $member->gender,
+            'height' => $member->height,
+            'blood_group' => $member->blood_group,
+            'health_info' => $member->health_info,
+            'marital_status' => $member->marital_status,
+            'no_of_child' => $member->no_of_child,
+
+            // Religion & Community
+            'religion' => $member->religion,
+            'mother_tongue' => $member->mother_tongue,
+            'cast' => $member->cast,
+            'sub_cast' => $member->sub_cast,
+            'gotra' => $member->gotra,
+            'manglik' => $member->manglik,
+            'horoscope_needed' => $member->horoscope_needed,
+
+            // Education
+            'about_my_education' => $member->about_my_education,
+            'education' => $member->education,
+            'any_other_qualifications' => $member->any_other_qualifications,
+
+            // Career
+            'about_my_career' => $member->about_my_career,
+            'employed_in' => $member->employed_in,
+            'occupation' => $member->occupation,
+            'designation' => $member->designation,
+            'organization_name' => $member->organization_name,
+            'job_location' => $member->job_location,
+            'annual_income' => $member->annual_income,
+
+            // Location
+            'country_living_in' => $member->country_living_in,
+            'state_living_in' => $member->state_living_in,
+            'city_living_in' => $member->city_living_in,
+            'address_living_in' => $member->address_living_in,
+            'native_place' => $member->native_place,
+
+            // Family
+            'family_type' => $member->family_type,
+            'family_status' => $member->family_status,
+            'father_name' => $member->father_name,
+            'father_occupation' => $member->father_occupation,
+            'mother_name' => $member->mother_name,
+            'mother_occupation' => $member->mother_occupation,
+            'no_of_brothers' => $member->no_of_brothers,
+            'no_of_sisters' => $member->no_of_sisters,
+            'married_brothers' => $member->married_brothers,
+            'married_sisters' => $member->married_sisters,
+            'family_income' => $member->family_income,
+            'about_family' => $member->about_family,
+
+            // Lifestyle
+            'diet' => $member->diet,
+            'is_drinking' => $member->is_drinking,
+            'is_smoking' => $member->is_smoking,
+            'about_me' => $member->about_me,
+            'any_disability' => $member->any_disability,
+
+            // Partner Preferences
+            'looking_for' => $member->looking_for,
+            'partner_age_from' => $member->partner_age_from,
+            'partner_age_to' => $member->partner_age_to,
+            'partner_country' => $member->partner_country,
+            'partner_religion' => $member->partner_religion,
+            'partner_cast' => $member->partner_cast,
+            'partner_height_from' => $member->partner_height_from,
+            'partner_height_to' => $member->partner_height_to,
+            'partner_education' => $member->partner_education,
+            'partner_mothertongue' => $member->partner_mothertongue,
+            'partner_annual_income_from' => $member->partner_annual_income_from,
+            'partner_annual_income_to' => $member->partner_annual_income_to,
+            'is_partner_manglik' => $member->is_partner_manglik,
+            'partner_occupation' => $member->partner_occupation,
+            'partner_state' => $member->partner_state,
+            'partner_city' => $member->partner_city,
+            'partner_diet' => $member->partner_diet,
+            'is_partner_smoking' => $member->is_partner_smoking,
+            'is_partner_drinking' => $member->is_partner_drinking,
+            'about_my_partner' => $member->about_my_partner,
+        ];
+    }
     /**
      * View logged-in member profile.
      */
@@ -21,114 +130,7 @@ class ProfileController extends Controller
             'success' => true,
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-
-                    // Profile completion
-                    'profile_completed' => $member->profile_completed,
-
-                    // Basic
-                    'profile_created_for' => $member->profile_created_for,
-                    'full_name' => $member->full_name,
-                    'email' => $member->email,
-                    'mobile_number' => $member->mobile_number,
-                    'alternate_number' => $member->alternate_number,
-                    'whatsapp_number' => $member->whatsapp_number,
-
-                    // Personal
-                    'birth_date_time' => $member->birth_date_time,
-                    'birth_place' => $member->birth_place,
-                    'gender' => $member->gender,
-                    'height' => $member->height,
-                    'blood_group' => $member->blood_group,
-                    'health_info' => $member->health_info,
-                    'marital_status' => $member->marital_status,
-                    'no_of_child' => $member->no_of_child,
-
-                    // Religion & Community
-                    'religion' => $member->religion,
-                    'mother_tongue' => $member->mother_tongue,
-                    'cast' => $member->cast,
-                    'sub_cast' => $member->sub_cast,
-                    'gotra' => $member->gotra,
-                    'manglik' => $member->manglik,
-
-                    // Education
-                    'about_my_education' => $member->about_my_education,
-                    'education' => $member->education,
-                    'any_other_qualifications' => $member->any_other_qualifications,
-
-                    // Career
-                    'about_my_career' => $member->about_my_career,
-                    'employed_in' => $member->employed_in,
-                    'occupation' => $member->occupation,
-                    'designation' => $member->designation,
-                    'organization_name' => $member->organization_name,
-                    'job_location' => $member->job_location,
-                    'annual_income' => $member->annual_income,
-
-                    // Location
-                    'country_living_in' => $member->country_living_in,
-                    'state_living_in' => $member->state_living_in,
-                    'city_living_in' => $member->city_living_in,
-                    'address_living_in' => $member->address_living_in,
-                    'native_place' => $member->native_place,
-
-                    // Family
-                    'family_type' => $member->family_type,
-                    'family_status' => $member->family_status,
-                    'father_name' => $member->father_name,
-                    'father_occupation' => $member->father_occupation,
-                    'mother_name' => $member->mother_name,
-                    'mother_occupation' => $member->mother_occupation,
-                    'no_of_brothers' => $member->no_of_brothers,
-                    'no_of_sisters' => $member->no_of_sisters,
-                    'married_brothers' => $member->married_brothers,
-                    'married_sisters' => $member->married_sisters,
-                    'family_income' => $member->family_income,
-                    'about_family' => $member->about_family,
-
-                    // Lifestyle
-                    'diet' => $member->diet,
-                    'is_drinking' => $member->is_drinking,
-                    'is_smoking' => $member->is_smoking,
-                    'about_me' => $member->about_me,
-                    'any_disability' => $member->any_disability,
-
-                    // Partner Preferences
-                    'looking_for' => $member->looking_for,
-                    'partner_age_from' => $member->partner_age_from,
-                    'partner_age_to' => $member->partner_age_to,
-                    'partner_country' => $member->partner_country,
-                    'partner_religion' => $member->partner_religion,
-                    'partner_cast' => $member->partner_cast,
-                    'partner_height_from' => $member->partner_height_from,
-                    'partner_height_to' => $member->partner_height_to,
-                    'partner_education' => $member->partner_education,
-                    'partner_mothertongue' => $member->partner_mothertongue,
-                    'partner_annual_income_from' => $member->partner_annual_income_from,
-                    'partner_annual_income_to' => $member->partner_annual_income_to,
-                    'is_partner_manglik' => $member->is_partner_manglik,
-                    'partner_occupation' => $member->partner_occupation,
-                    'partner_state' => $member->partner_state,
-                    'partner_city' => $member->partner_city,
-                    'partner_diet' => $member->partner_diet,
-                    'is_partner_smoking' => $member->is_partner_smoking,
-                    'is_partner_drinking' => $member->is_partner_drinking,
-                    'about_my_partner' => $member->about_my_partner,
-                    'horoscope_needed' => $member->horoscope_needed,
-
-                    // Location
-                    'country_living_in' => $member->country_living_in,
-                    'state_living_in' => $member->state_living_in,
-                    'city_living_in' => $member->city_living_in,
-                    'address_living_in' => $member->address_living_in,
-                    'native_place' => $member->native_place,
-
-                    // Profile completion
-                    'profile_completed' => (int) $member->profile_completed,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -170,18 +172,7 @@ class ProfileController extends Controller
             'message' => 'Basic profile updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'profile_created_for' => $member->profile_created_for,
-                    'full_name' => $member->full_name,
-                    'email' => $member->email,
-                    'mobile_number' => $member->mobile_number,
-                    'alternate_number' => $member->alternate_number,
-                    'whatsapp_number' => $member->whatsapp_number,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -195,10 +186,11 @@ class ProfileController extends Controller
         $member = $request->user();
 
         $validated = $request->validate([
+
             'birth_date_time' => [
                 'sometimes',
                 'nullable',
-                'date',
+                'date_format:Y-m-d h:i A',
             ],
 
             'birth_place' => [
@@ -218,8 +210,7 @@ class ProfileController extends Controller
             'height' => [
                 'sometimes',
                 'nullable',
-                'string',
-                'max:20',
+                'regex:/^\d+ft\s\d+in$/',
             ],
 
             'blood_group' => [
@@ -241,12 +232,14 @@ class ProfileController extends Controller
                 'nullable',
                 'integer',
                 'min:0',
+                'max:20',
             ],
 
             'health_info' => [
                 'sometimes',
                 'nullable',
                 'string',
+                'max:2000',
             ],
         ]);
 
@@ -262,20 +255,7 @@ class ProfileController extends Controller
             'message' => 'Personal details updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'birth_date_time' => $member->birth_date_time,
-                    'birth_place' => $member->birth_place,
-                    'gender' => $member->gender,
-                    'height' => $member->height,
-                    'blood_group' => $member->blood_group,
-                    'marital_status' => $member->marital_status,
-                    'no_of_child' => $member->no_of_child,
-                    'health_info' => $member->health_info,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -289,6 +269,7 @@ class ProfileController extends Controller
         $member = $request->user();
 
         $validated = $request->validate([
+
             'religion' => [
                 'sometimes',
                 'nullable',
@@ -327,8 +308,7 @@ class ProfileController extends Controller
             'manglik' => [
                 'sometimes',
                 'nullable',
-                'string',
-                'max:50',
+                'in:Yes,No',
             ],
         ]);
 
@@ -344,18 +324,7 @@ class ProfileController extends Controller
             'message' => 'Religion and community details updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'religion' => $member->religion,
-                    'mother_tongue' => $member->mother_tongue,
-                    'cast' => $member->cast,
-                    'sub_cast' => $member->sub_cast,
-                    'gotra' => $member->gotra,
-                    'manglik' => $member->manglik,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -369,10 +338,12 @@ class ProfileController extends Controller
         $member = $request->user();
 
         $validated = $request->validate([
+
             'about_my_education' => [
                 'sometimes',
                 'nullable',
                 'string',
+                'max:3000',
             ],
 
             'education' => [
@@ -386,12 +357,14 @@ class ProfileController extends Controller
                 'sometimes',
                 'nullable',
                 'string',
+                'max:2000',
             ],
 
             'about_my_career' => [
                 'sometimes',
                 'nullable',
                 'string',
+                'max:3000',
             ],
 
             'employed_in' => [
@@ -449,24 +422,7 @@ class ProfileController extends Controller
             'message' => 'Education and career details updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'about_my_education' => $member->about_my_education,
-                    'education' => $member->education,
-                    'any_other_qualifications' =>
-                    $member->any_other_qualifications,
-
-                    'about_my_career' => $member->about_my_career,
-                    'employed_in' => $member->employed_in,
-                    'occupation' => $member->occupation,
-                    'designation' => $member->designation,
-                    'organization_name' => $member->organization_name,
-                    'job_location' => $member->job_location,
-                    'annual_income' => $member->annual_income,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -480,6 +436,7 @@ class ProfileController extends Controller
         $member = $request->user();
 
         $validated = $request->validate([
+
             'country_living_in' => [
                 'sometimes',
                 'nullable',
@@ -505,6 +462,7 @@ class ProfileController extends Controller
                 'sometimes',
                 'nullable',
                 'string',
+                'max:1000',
             ],
 
             'native_place' => [
@@ -527,17 +485,7 @@ class ProfileController extends Controller
             'message' => 'Location details updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'country_living_in' => $member->country_living_in,
-                    'state_living_in' => $member->state_living_in,
-                    'city_living_in' => $member->city_living_in,
-                    'address_living_in' => $member->address_living_in,
-                    'native_place' => $member->native_place,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -551,6 +499,7 @@ class ProfileController extends Controller
         $member = $request->user();
 
         $validated = $request->validate([
+
             'family_type' => [
                 'sometimes',
                 'nullable',
@@ -598,6 +547,7 @@ class ProfileController extends Controller
                 'nullable',
                 'integer',
                 'min:0',
+                'max:20',
             ],
 
             'no_of_sisters' => [
@@ -605,6 +555,7 @@ class ProfileController extends Controller
                 'nullable',
                 'integer',
                 'min:0',
+                'max:20',
             ],
 
             'married_brothers' => [
@@ -612,6 +563,7 @@ class ProfileController extends Controller
                 'nullable',
                 'integer',
                 'min:0',
+                'max:20',
             ],
 
             'married_sisters' => [
@@ -619,6 +571,7 @@ class ProfileController extends Controller
                 'nullable',
                 'integer',
                 'min:0',
+                'max:20',
             ],
 
             'family_income' => [
@@ -632,6 +585,7 @@ class ProfileController extends Controller
                 'sometimes',
                 'nullable',
                 'string',
+                'max:3000',
             ],
         ]);
 
@@ -647,29 +601,7 @@ class ProfileController extends Controller
             'message' => 'Family details updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'family_type' => $member->family_type,
-                    'family_status' => $member->family_status,
-
-                    'father_name' => $member->father_name,
-                    'father_occupation' => $member->father_occupation,
-
-                    'mother_name' => $member->mother_name,
-                    'mother_occupation' => $member->mother_occupation,
-
-                    'no_of_brothers' => $member->no_of_brothers,
-                    'no_of_sisters' => $member->no_of_sisters,
-
-                    'married_brothers' => $member->married_brothers,
-                    'married_sisters' => $member->married_sisters,
-
-                    'family_income' => $member->family_income,
-                    'about_family' => $member->about_family,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -683,6 +615,7 @@ class ProfileController extends Controller
         $member = $request->user();
 
         $validated = $request->validate([
+
             'diet' => [
                 'sometimes',
                 'nullable',
@@ -693,28 +626,27 @@ class ProfileController extends Controller
             'is_drinking' => [
                 'sometimes',
                 'nullable',
-                'string',
-                'max:20',
+                'in:Yes,No',
             ],
 
             'is_smoking' => [
                 'sometimes',
                 'nullable',
-                'string',
-                'max:20',
+                'in:Yes,No',
             ],
 
             'about_me' => [
                 'sometimes',
                 'nullable',
                 'string',
+                'max:3000',
             ],
 
             'any_disability' => [
                 'sometimes',
                 'nullable',
                 'string',
-                'max:255',
+                'max:1000',
             ],
         ]);
 
@@ -730,17 +662,7 @@ class ProfileController extends Controller
             'message' => 'Lifestyle details updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'diet' => $member->diet,
-                    'is_drinking' => $member->is_drinking,
-                    'is_smoking' => $member->is_smoking,
-                    'about_me' => $member->about_me,
-                    'any_disability' => $member->any_disability,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }
@@ -918,131 +840,7 @@ class ProfileController extends Controller
             'message' => 'Partner preferences updated successfully.',
 
             'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-                    'profile_completed' => $member->profile_completed,
-
-                    'looking_for' => $member->looking_for,
-
-                    'partner_age_from' => $member->partner_age_from,
-                    'partner_age_to' => $member->partner_age_to,
-
-                    'partner_country' => $member->partner_country,
-                    'partner_religion' => $member->partner_religion,
-                    'partner_cast' => $member->partner_cast,
-
-                    'partner_height_from' => $member->partner_height_from,
-                    'partner_height_to' => $member->partner_height_to,
-
-                    'partner_education' => $member->partner_education,
-                    'partner_mothertongue' => $member->partner_mothertongue,
-
-                    'partner_annual_income_from' =>
-                    $member->partner_annual_income_from,
-
-                    'partner_annual_income_to' =>
-                    $member->partner_annual_income_to,
-
-                    'is_partner_manglik' =>
-                    $member->is_partner_manglik,
-
-                    'partner_occupation' =>
-                    $member->partner_occupation,
-
-                    'partner_state' => $member->partner_state,
-                    'partner_city' => $member->partner_city,
-
-                    'partner_diet' => $member->partner_diet,
-
-                    'is_partner_smoking' =>
-                    $member->is_partner_smoking,
-
-                    'is_partner_drinking' =>
-                    $member->is_partner_drinking,
-
-                    'about_my_partner' =>
-                    $member->about_my_partner,
-
-                    'horoscope_needed' =>
-                    $member->horoscope_needed,
-                ],
-            ],
-        ]);
-    }
-
-    /**
-     * Update location details.
-     */
-    public function updateLocation(Request $request): JsonResponse
-    {
-        /** @var \App\Models\Member $member */
-        $member = $request->user();
-
-        $validated = $request->validate([
-            'country_living_in' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
-            'state_living_in' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
-            'city_living_in' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
-            'address_living_in' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:500',
-            ],
-
-            'native_place' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:255',
-            ],
-        ]);
-
-        /*
-     * Only fields supplied by the app are updated.
-     * Existing values remain unchanged when a field is omitted.
-     */
-        $member->fill($validated);
-
-        // Recalculate profile completion after updating location.
-        $member->profile_completed = $member->getProfileCompletion();
-
-        $member->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Location details updated successfully.',
-            'data' => [
-                'member' => [
-                    'id' => $member->id,
-                    'profile_id' => $member->profile_id,
-
-                    'country_living_in' => $member->country_living_in,
-                    'state_living_in' => $member->state_living_in,
-                    'city_living_in' => $member->city_living_in,
-                    'address_living_in' => $member->address_living_in,
-                    'native_place' => $member->native_place,
-
-                    'profile_completed' => (int) $member->profile_completed,
-                ],
+                'member' => $this->memberData($member),
             ],
         ]);
     }

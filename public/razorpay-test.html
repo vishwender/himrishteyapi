@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Razorpay Wallet Test</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Wallet Add Money Test</h1>
+
+    <p>
+        Amount: ₹10,000
+    </p>
+
+    <button id="payButton">
+        Pay ₹10,000
+    </button>
+
+    <pre id="result"></pre>
+
+    <script>
+
+        const API_BASE_URL = 'https://himrishteyapi.ddev.site/api/v1';  
+
+        const TOKEN =
+            'OGYLA8HFzgYpmePQbKgc67wiqexrGgfJFv1ezOZb';
+
+        const APP_CODE =
+            'himrishtey';
+
+
+        document
+            .getElementById('payButton')
+            .addEventListener('click', createOrder);
+
+
+        async function createOrder() {
+            const result =
+                document.getElementById('result');
+
+            result.textContent =
+                'Creating Razorpay order...';
+
+
+            try {
+
+           const response = await fetch(
+                    `${API_BASE_URL}/wallet/add-money/order`,
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${TOKEN}`,
+                            'X-App-Code': 'himrishtey'
+                        },
+
+                        body: JSON.stringify({
+                            amount: 100
+                        })
+                    }
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    result.textContent =
+                        JSON.stringify(
+                            data,
+                            null,
+                            2
+                        );
+
+                    return;
+                }
+
+
+                openRazorpayCheckout(
+                    data.data
+                );
+
+            } catch (error) {
+
+                result.textContent =
+                    error.toString();
+            }
+        }
+
+
+        function openRazorpayCheckout(order) {
+
+            const options = {
+
+                key:
+                    order.razorpay_key,
+
+                amount:
+                    order.amount_in_paise,
+
+                currency:
+                    order.currency,
+
+                name:
+                    'HimRishtey',
+
+                description:
+                    'Wallet Recharge',
+
+                order_id:
+                    order.order_id,
+
+
+                handler:
+                    async function (response) {
+
+                        document
+                            .getElementById('result')
+                            .textContent =
+                            'Payment successful.\n\n' +
+                            JSON.stringify(
+                                response,
+                                null,
+                                2
+                            );
+
+
+                        await verifyPayment(
+                            response
+                        );
+                    },
+
+
+                prefill: {
+                    name: 'Test User'
+                },
+
+
+                theme: {
+                    color: '#6d4aff'
+                }
+
+            };
+
+
+            const razorpay =
+                new Razorpay(options);
+
+
+            razorpay.on(
+                'payment.failed',
+                function (response) {
+
+                    document
+                        .getElementById('result')
+                        .textContent =
+                        JSON.stringify(
+                            response,
+                            null,
+                            2
+                        );
+                }
+            );
+
+
+            razorpay.open();
+        }
+
+
+        async function verifyPayment(payment) {
+
+            const result =
+                document.getElementById('result');
+
+
+            result.textContent +=
+                '\n\nVerifying payment...';
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_URL +
+                        '${API_BASE_URL}/wallet/add-money/verify',
+                        {
+                            method: 'POST',
+
+                            headers: {
+                                'Accept':
+                                    'application/json',
+
+                                'Content-Type':
+                                    'application/json',
+
+                                'Authorization':
+                                    'Bearer ' + TOKEN,
+
+                                'X-App-Code':
+                                    APP_CODE
+                            },
+
+                            body: JSON.stringify({
+
+                                razorpay_order_id:
+                                    payment.razorpay_order_id,
+
+                                razorpay_payment_id:
+                                    payment.razorpay_payment_id,
+
+                                razorpay_signature:
+                                    payment.razorpay_signature
+
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                result.textContent +=
+                    '\n\nVerification response:\n\n' +
+                    JSON.stringify(
+                        data,
+                        null,
+                        2
+                    );
+
+            } catch (error) {
+
+                result.textContent +=
+                    '\n\nVerification error:\n\n' +
+                    error.toString();
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
