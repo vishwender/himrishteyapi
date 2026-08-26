@@ -12,6 +12,11 @@ use App\Http\Controllers\Api\V1\MembershipController;
 use App\Http\Controllers\Api\V1\RateUsController;
 use App\Http\Controllers\Api\V1\LegalController;
 use App\Http\Controllers\Api\V1\WalletController;
+use App\Http\Controllers\Api\V1\SuccessStoryController;
+use App\Http\Controllers\Api\V1\DeleteProfileRequestController;
+use App\Http\Controllers\Api\V1\ProfileLikeController;
+use App\Http\Controllers\Api\V1\ShortlistedController;
+use App\Http\Controllers\Api\V1\SentInterestController;
 
 Route::prefix('v1')
     ->middleware('application')
@@ -179,6 +184,132 @@ Route::prefix('v1')
                 Route::post(
                     '/wallet/add-money/verify',
                     [WalletController::class, 'verifyAddMoney']
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | Success Stories
+                |--------------------------------------------------------------------------
+                */
+
+                Route::get(
+                    '/success-stories',
+                    [SuccessStoryController::class, 'index']
+                );
+
+                Route::get(
+                    '/success-stories',
+                    [SuccessStoryController::class, 'myStories']
+                );
+
+                Route::post(
+                    '/success-stories',
+                    [SuccessStoryController::class, 'store']
+                );
+
+                Route::get(
+                    '/success-stories/{id}',
+                    [SuccessStoryController::class, 'show']
+                );
+
+                Route::put(
+                    '/success-stories/{id}',
+                    [SuccessStoryController::class, 'update']
+                );
+
+                Route::delete(
+                    '/success-stories/{id}',
+                    [SuccessStoryController::class, 'destroy']
+                );
+
+                //delete profile request
+                Route::post(
+                    '/profile/delete-request',
+                    [DeleteProfileRequestController::class, 'store']
+                );
+
+                Route::get(
+                    '/profile/delete-request',
+                    [DeleteProfileRequestController::class, 'index']
+                );
+
+                //profile likes
+                Route::get(
+                    '/profile-likes',
+                    [ProfileLikeController::class, 'index']
+                );
+
+                Route::get(
+                    '/profile-likes/{memberId}',
+                    [ProfileLikeController::class, 'show']
+                );
+
+                Route::post(
+                    '/profile-likes/{memberId}',
+                    [ProfileLikeController::class, 'store']
+                );
+
+                Route::delete(
+                    '/profile-likes/{memberId}',
+                    [ProfileLikeController::class, 'destroy']
+                );
+
+                //shortlisted profiles
+                Route::get(
+                    '/shortlisted',
+                    [ShortlistedController::class, 'index']
+                );
+
+                Route::get(
+                    '/shortlisted/{profileId}',
+                    [ShortlistedController::class, 'show']
+                );
+
+                Route::post(
+                    '/shortlisted/{profileId}',
+                    [ShortlistedController::class, 'store']
+                );
+
+                Route::delete(
+                    '/shortlisted/{profileId}',
+                    [ShortlistedController::class, 'destroy']
+                );
+
+                //sent interest
+
+                Route::post(
+                    '/interests/{profileId}',
+                    [SentInterestController::class, 'store']
+                );
+
+                Route::get(
+                    '/interests/sent',
+                    [SentInterestController::class, 'index']
+                );
+
+                Route::get(
+                    '/interests/received',
+                    [SentInterestController::class, 'received']
+                );
+
+                Route::put(
+                    '/interests/{id}/accept',
+                    [SentInterestController::class, 'accept']
+                );
+
+                Route::put(
+                    '/interests/{id}/reject',
+                    [SentInterestController::class, 'reject']
+                );
+
+                Route::delete(
+                    '/interests/{id}/cancel',
+                    [SentInterestController::class, 'cancel']
+                );
+
+                Route::get(
+                    '/interests/{profileId}',
+                    [SentInterestController::class, 'show']
                 );
             });
 
