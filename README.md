@@ -117,6 +117,7 @@ curl -X POST "$BASE_URL/auth/login" \
 | PUT | `/profile/lifestyle` | `diet`, `is_drinking`, `is_smoking`, `about_me`, `any_disability` |
 | PUT | `/profile/partner-preferences` | `looking_for`, `partner_age_from`, `partner_age_to`, `partner_country`, `partner_religion`, `partner_cast`, `partner_height_from`, `partner_height_to`, `partner_education`, `partner_mothertongue`, `partner_annual_income_from`, `partner_annual_income_to`, `is_partner_manglik`, `partner_occupation`, `partner_state`, `partner_city`, `partner_diet`, `is_partner_smoking`, `is_partner_drinking`, `horoscope_needed`, `about_my_partner` |
 | POST | `/profile/photos/gallery` | Multipart: `photo=@gallery.jpg` |
+| POST | `/profiles/{profileId}/contact/unlock` | Unlock contact details using the database-configured `profile_ranges` rate |
 
 Sample protected requests:
 
@@ -137,6 +138,11 @@ curl -X PUT "$BASE_URL/profile/partner-preferences" \
 curl -X POST "$BASE_URL/profile/photos/gallery" \
   -H "Accept: application/json" -H "X-App-Code: $APP_CODE" \
   -H "Authorization: Bearer $TOKEN" -F "photo=@/absolute/path/gallery.jpg"
+
+# Unlock member 456's contact details; repeated requests do not charge again
+curl -X POST "$BASE_URL/profiles/456/contact/unlock" \
+  -H "Accept: application/json" -H "X-App-Code: $APP_CODE" \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
 ### Search and home

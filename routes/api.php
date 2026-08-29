@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\DeleteProfileRequestController;
 use App\Http\Controllers\Api\V1\ProfileLikeController;
 use App\Http\Controllers\Api\V1\ShortlistedController;
 use App\Http\Controllers\Api\V1\SentInterestController;
+use App\Http\Controllers\Api\V1\ProfileContactController;
 
 Route::prefix('v1')
     ->middleware('application')
@@ -125,6 +126,11 @@ Route::prefix('v1')
                     '/profile/photos/gallery',
                     [ProfilePhotoController::class, 'uploadGalleryPhoto']
                 );
+
+                Route::post(
+                    '/profiles/{profileId}/contact/unlock',
+                    [ProfileContactController::class, 'unlock']
+                )->whereNumber('profileId');
 
                 //Search
                 Route::get('/search/quick', [

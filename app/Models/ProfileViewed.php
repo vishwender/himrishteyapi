@@ -8,6 +8,8 @@ class ProfileViewed extends Model
 {
     protected $table = 'profile_viewed';
 
+    protected $connection = 'application';
+
     public $timestamps = false;
 
     protected $fillable = [
