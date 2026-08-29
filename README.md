@@ -145,6 +145,74 @@ curl -X POST "$BASE_URL/profiles/456/contact/unlock" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
+#### Unlock contact details
+
+This endpoint reveals a target member's email and phone numbers after deducting coins from the authenticated member's wallet.
+
+```http
+POST /api/v1/profiles/{profileId}/contact/unlock
+```
+
+`profileId` is the target member's numeric database ID, not the public ID such as `HIM123`. No request body is required.
+
+The charge is calculated dynamically:
+
+1. Count the distinct profiles previously unlocked by the authenticated member.
+2. Add one to obtain the current profile-view number.
+3. Find the row in `profile_ranges` where that number is between `range_from` and `range_to`.
+4. Deduct the row's `rate` from the latest wallet balance.
+5. Record the deduction in `member_wallet` and the unlock in `profile_viewed` within one transaction.
+
+Rates are never hard-coded in the API. Administrators can change `range_from`, `range_to`, and `rate` in `profile_ranges`. If no range covers the current view number, the API returns HTTP `422` without deducting coins.
+
+Successful first unlock:
+
+```json
+{
+  "success": true,
+  "message": "Contact details unlocked successfully.",
+  "data": {
+    "profile": {
+      "id": 456,
+      "profile_id": "HIM456",
+      "full_name": "Ananya Sharma"
+    },
+    "contact_details": {
+      "email": "ananya@example.com",
+      "mobile_number": "9876543210",
+      "alternate_number": null,
+      "whatsapp_number": "9876543210"
+    },
+    "already_unlocked": false,
+    "coins_deducted": 10,
+    "wallet_balance": 90,
+    "profile_view_number": 1,
+    "price_range": {
+      "from": 1,
+      "to": 20
+    }
+  }
+}
+```
+
+Unlocking the same profile again does not deduct coins. The response returns `already_unlocked: true`, `coins_deducted: 0`, and the contact details again.
+
+Insufficient wallet balance returns HTTP `402`:
+
+```json
+{
+  "success": false,
+  "message": "Insufficient wallet balance.",
+  "data": {
+    "required_coins": 10,
+    "wallet_balance": 5,
+    "profile_view_number": 1
+  }
+}
+```
+
+Other possible errors include attempting to unlock your own profile (`422`), a missing/inactive/hidden profile (`404`), and missing pricing configuration (`422`).
+
 ### Search and home
 
 | Method | Endpoint | Sample input |
